@@ -41,7 +41,7 @@ public class Painter : MonoBehaviour
         if (isDrawing && Input.GetMouseButton(0))
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0f;
+            mousePos.z = 0;
             line.positionCount++;
             line.SetPosition(line.positionCount - 1, mousePos);
         }
