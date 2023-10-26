@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Painter : MonoBehaviour
 {
-    LineRenderer line;
+    private LineRenderer line;
+    private Color currentColor = Color.black;
+    private bool isDrawing = false;
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -17,40 +17,48 @@ public class Painter : MonoBehaviour
             {
                 if (hit.collider.gameObject.name.Equals("melyna_spalva"))
                 {
-                    CreateNewLine(Color.blue);
-                }
-                else if (hit.collider.gameObject.name.Equals("raudona_spalva"))
-                {
-                    CreateNewLine(Color.red);
+                    currentColor = Color.blue;
+                    isDrawing = false;
                 }
                 else if (hit.collider.gameObject.name.Equals("zalia_spalva"))
                 {
-                    CreateNewLine(Color.green);
+                    currentColor = Color.green;
+                    isDrawing = false;
+                }
+                else if (hit.collider.gameObject.name.Equals("raudona_spalva"))
+                {
+                    currentColor = Color.red;
+                    isDrawing = false;
+                }
+                else
+                {
+                    isDrawing = true;
+                    CreateLine();
                 }
             }
         }
 
-        if (Input.GetKey(KeyCode.Mouse0) && line != null)
+        if (isDrawing && Input.GetMouseButton(0))
         {
-            AddPoint();
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0f;
+            line.positionCount++;
+            line.SetPosition(line.positionCount - 1, mousePos);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDrawing = false;
         }
     }
 
-    void AddPoint()
-    {
-        var worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        worldPos.z = 0;
-        line.positionCount++;
-        line.SetPosition(line.positionCount - 1, worldPos);
-    }
-
-    void CreateNewLine(Color color)
+    private void CreateLine()
     {
         GameObject newLineObject = new GameObject("LineRenderer");
         line = newLineObject.AddComponent<LineRenderer>();
         line.material = new Material(Shader.Find("Sprites/Default"));
-        line.startColor = color;
-        line.endColor = color;
+        line.startColor = currentColor;
+        line.endColor = currentColor;
         line.startWidth = 0.2f;
         line.endWidth = 0.2f;
     }
